@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewBag.Title = "jquery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>jquery</h2>
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('.btn').click(function () {
+            $('.btn').attr('type','button');
+            $(this).attr('type', 'text');
+        });
+    })
+</script>
+
+<form id="div1">
+    <input type="button" name="a1" value="a1"  class="btn"/>
+    <input type="button" name="a2" value="a2"  class="btn"/>
+    <input type="button" name="a3" value="a3"  class="btn"/>
+    <input type="button" name="a4" value="a4"  class="btn"/>
+    <input type="button" name="a5" value="a5"  class="btn"/>
+    <input type="button" name="a6" value="a6"  class="btn"/>
+    <input type="button" name="a7" value="a7"  class="btn"/>
+
+</form>

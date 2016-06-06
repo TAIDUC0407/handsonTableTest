@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts{
+    <script src="~/Scripts/plugins/mustache.min.js"></script>
+    <script src="~/Scripts/controllers/Tbl_TheoDoiController.js"></script>
+}
+
+<div class="row">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã chuyền</th>
+                <th>Mã hàng</th>
+                <th>Số lượng kế hoạch</th>
+                <th>Thực hiện</th>
+                <th>Lũy kế thực hiện</th>
+                <th>Đèn báo cấp BTP</th>
+                <th>Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody id="tblData"></tbody>
+    </table>
+</div>
+<script id="data-template" type="x-tmpl-mustache">
+    <tr>
+
+
+        @*@Html.DropDownList("ddl", Model.Select(item => new SelectListItem
+   {
+       Value = item.RecordID.ToString(),
+       Text = item.Name.ToString(),
+       Selected = "select" == item.RecordID.ToString() ? true : false
+   }))*@
+
+
+        <td>{{MaChuyen}}</td>
+        <td>{{MaHang}}@*@Html.DropDownList("MaHang", null, new { @class = "form-control", @select = "{{MaHang}}" })*@</td>
+        <td><input type="number" class="txtSalary s1" data-idSLKH="{{MaChuyen}}" value="{{SLKeHoach}}" /></td>
+        <td><input type="number" class="txtSalary s2" data-idTH="{{MaChuyen}}" value="{{ThucHien}}" /></td>
+        <td><input type="number" class="txtSalary s3" data-idLKTH="{{MaChuyen}}" value="{{LuyKeThucHien}}" /></td>
+        <td>{{{DenBaoCapBTP}}}</td>
+        <td>{{NgayTao}}</td>
+    </tr>
+</script>

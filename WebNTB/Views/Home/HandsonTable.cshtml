@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewBag.Title = "HandsonTable";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="https://docs.handsontable.com/0.24.3/bower_components/handsontable/dist/handsontable.full.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://docs.handsontable.com/0.24.3/bower_components/handsontable/dist/handsontable.full.min.css">
+
+<h2>HandsonTable</h2>
+
+
+
+<style>
+    body {
+    background-color: white;
+    margin: 20px;
+}
+
+h2 {
+    margin: 20px 0;
+}
+</style>
+
+
+<h2>Default Handsontable Demo</h2>
+
+<div id="exampleGrid" class="dataTable"></div>
+
+<script>
+
+    $(document).ready(function () {
+        //getBangTheoDoiToCats();
+        //alert(getBangTheoDoiToCats())
+    })
+    var myData = [
+    ["Mã chuyến", "Mã hàng", "Số lượng kế hoạch", "Thực hiện", "Lũy kế thực hiện", "Đèn báo", "Thời gian"]
+    ];
+    //function getBangTheoDoiToCats() {
+        $.ajax({
+            url: '/Home/GetBangTheoDoi/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var items = [];
+                $.each(data, function (i, item) {
+                    items.push(item.MaChuyen, item.MaHang, item.SLKHoach, item.ThucHien, item.LuyKeThucHien, item.DenBaoCapBTP, item.NgayTao);
+                    myData.push(items);
+                });
+            },
+            error: function (err) {
+                alert("Error: 1" + err.responseText);
+            }
+        });
+        $("#exampleGrid").handsontable({
+            data: myData,
+            startRows: 5,
+            startCols: 5,
+            minSpareCols: 0,
+            //always keep at least 1 spare row at the right
+            minSpareRows: 0,
+            //always keep at least 1 spare row at the bottom,
+            rowHeaders: true,
+            colHeaders: true,
+            contextMenu: true
+        });
+    //}
+
+
+</script>

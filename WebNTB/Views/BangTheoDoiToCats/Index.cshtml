@@ -1,0 +1,58 @@
+﻿@model IEnumerable<WebNTB.Models.BangTheoDoiToCat>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Tạo mới", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.BangTenMatHang.TenHang)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SLKeHoach)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ThucHien)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LuyKeThucHien)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DenBaoCapBTP)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.BangTenMatHang.TenHang)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SLKeHoach)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ThucHien)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LuyKeThucHien)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DenBaoCapBTP)
+        </td>
+        <td>
+            @Html.ActionLink("Chỉnh sửa", "Edit", new { id=item.MaChuyen }) |
+            @Html.ActionLink("Chi tiết", "Details", new { id=item.MaChuyen }) |
+            @Html.ActionLink("Xóa", "Delete", new { id=item.MaChuyen })
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,59 @@
+﻿@model WebNTB.Models.BangTheoDoiToCat
+
+@{
+    ViewBag.Title = "Chi tiết";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Chi tiết</h2>
+
+<div>
+    <h4>Bảng theo dõi tổ cắt</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.BangTenMatHang.TenHang)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BangTenMatHang.TenHang)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SLKeHoach)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SLKeHoach)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ThucHien)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ThucHien)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LuyKeThucHien)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LuyKeThucHien)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DenBaoCapBTP)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DenBaoCapBTP)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Chỉnh sửa", "Edit", new { id = Model.MaChuyen }) |
+    @Html.ActionLink("Trở về danh sách", "Index")
+</p>

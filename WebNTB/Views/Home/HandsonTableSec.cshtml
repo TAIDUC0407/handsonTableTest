@@ -1,0 +1,176 @@
+﻿
+@{
+    ViewBag.Title = "HandsonTableSec";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/HandsonTable/handsontable.full.min.css" rel="stylesheet" />
+<script src="~/Content/HandsonTable/handsontable.full.min.js"></script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 text-center">
+            <div class="ajax-container">
+                <div class="controls">
+                    <button class="intext-btn btn btn-primary center-block"
+                            id="load" name="load">
+                        Load
+                    </button>
+                    <button class="intext-btn btn btn-primary center-block"
+                            id="save" name="save">
+                        Save
+                    </button>
+                    <label>
+                        <input type="checkbox" autocomplete="off"
+                               checked="checked" id="autosave"
+                               name="autosave">Autosave
+                    </label>
+                </div>
+                <pre class="console"
+                     id="example1console">Click "Load" to load data from server</pre>
+                <div id="example1"
+                     class="hot handsontable dataTable table-striped center-block"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // Variables declaration & to make our life easier we set our HTML tags to variables too
+    var
+        $$ = function(id) {return document.getElementById(id);},
+        container = $$('example1'),
+        exampleConsole = $$('example1console'),
+        autosave = $$('autosave'),
+        save = $$('save'),
+        load = $$('load'),
+        autosaveNotification,
+        hot;
+
+    //function ToJavaScriptDate(value) {
+    //    var pattern = /Date\(([^)]+)\)/;
+    //    var results = pattern.exec(value);
+    //    var dt = new Date(parseFloat(results));
+    //    return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+    //}
+
+    hot = new Handsontable(container, {
+        startRows: 8,
+        startCols: 6,
+        currentRowClassName: 'currentRow',
+        currentColClassName: 'currentCol',
+        columnSorting: true,
+        rowHeaders: true,
+        columns: [
+            { data: "MaChuyen", readOnly: true },
+            { data: "MaHang", type: 'dropdown',source: ['yellow', 'red', 'orange', 'green', 'blue', 'gray', 'black', 'white']},
+            { data: "SLKeHoach" },
+            { data: "ThucHien" },
+            { data: "LuyKeThucHien" },
+            { data: "DenBaoCapBTP", type: 'checkbox' },
+            { data: "NgayTao", type: 'date', dateFormat: 'MM/DD/YYYY' }
+        ],
+        colHeaders: ["Mã chuyến", "Mã hàng", "SLKHoach", "Thực hiện","Lũy kế thực hiện","Đèn báo cấp BTP","Ngày tạo"],
+        // This is for the AutoSave func
+        afterChange: function(change, source) {
+            if (source === 'loadData') {
+                return; //don't save this change
+            }
+            if (!autosave.checked) {
+                return;
+            }
+            
+            alert(hot.getSourceDataAtCol(3));
+            console.log(hot.getSourceDataAtCol(3));
+
+            clearTimeout(autosaveNotification);
+            jQuery.ajax({
+                url: '@Url.Action("AddCar")',
+                type: "POST",
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(hot.getData()),
+                async: true,
+                processData: false,
+                cache: false,
+                success: function (data) {
+                    exampleConsole.innerHTML = 'Changes will be autosaved';
+                    autosaveNotification = setTimeout(function () {
+                        exampleConsole.innerHTML = 'Autosaved (' + change.length +
+                        ' ' + 'cell' +
+                        (change.length > 1 ? 's' : '') + ')';
+                    }, 1000);
+                    //alert(data);
+                },
+                error: function(xhr) {
+                    exampleConsole.innerHTML = 'Autosave: No Response from Controller';
+                    //alert('error');
+                }
+            });
+        }
+        // End of AutoSave func
+
+
+    });
+
+    // GET method gets data from the Controller
+    Handsontable.Dom.addEvent(load, 'click', function () {
+        jQuery.ajax({
+            url: '/Home/GetCar', //Controller to Get the
+            			//JsonResult From -- Json(jsonData, JsonRequestBehavior.AllowGet);
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json;charset=utf-8', // dataType and contentType should be json
+            async: true,
+            processData: false,
+            cache: false,
+            success: function (data) {      // on Success send the Json data
+            					// to the table by using loaddata function""
+                hot.loadData(data);
+
+                //load thời gian đúng định dạng...
+                //$('td.htAutocomplete').each(function (i, e) {
+                //    var value = $(this).text();
+                //    var date = new Date(parseInt(value.substr(6)));
+                //    var datetime = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+                //    $(this).text(datetime);
+                //});
+                exampleConsole.innerHTML = 'Data loaded';
+            },
+            error: function (xhr) {
+                alert('error');
+            }
+        });
+        // POST method gets data to the Controller
+        Handsontable.Dom.addEvent(save, 'click', function () {
+            jQuery.ajax({
+                url: '/Home/AddCar',
+                type: "POST",
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(hot.getSourceData()),
+                async: true,
+                processData: false,
+                cache: false,
+                success: function (data) {
+                    exampleConsole.innerHTML = 'Data saved';
+                    //alert(data);
+                },
+                error: function (xhr) {
+                    exampleConsole.innerHTML = 'Save error';
+                    //alert('error');
+                }
+            });
+        });
+
+        Handsontable.Dom.addEvent(autosave, 'click', function() {
+            if (autosave.checked) {
+                exampleConsole.innerHTML = 'Changes will be autosaved';    
+            }
+            else {
+                exampleConsole.innerHTML = 'Changes will not be autosaved';
+            }
+        });
+    });
+
+</script>

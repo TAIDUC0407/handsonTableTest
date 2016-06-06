@@ -1,0 +1,271 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div>
+     @*<form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+    <br />
+    <br />
+    <br />*@
+    <p>
+        <button type="button" id="btnCreateNew" class="btn btn-default" data-toggle="modal" data-target="#bookModal">
+            <i class="glyphicon glyphicon-plus"></i>
+        </button>
+    </p>
+</div>
+
+    @*table dùng để hiển thị danh sách bảng theo dỏi tổ cắt *@
+    <table id="listBangTheoDoiToCats" class="table">
+        <thead>
+            <tr>
+                <th align='center'><label>Mã chuyền</label></th>
+                <th align='center'><label>Mã hàng</label></th>
+                <th align='center'><label>Số lượng kế hoạch</label></th>
+                <th align='center'><label>Thực hiện</label></th>
+                <th align='center'><label>Lũy kế thực hiện</label></th>
+                <th align='center'><label>Đèn báo cấp BTP</label></th>
+                <th align='center'><label>Ngày tạo</label></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    @*modal dùng để hiển thị form Create và Update*@
+    <div class="modal fade" id="bookModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><label id="title"></label></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <input type="hidden" class="form-control" id="MaChuyen" />
+                                <label>Mã hàng</label>
+                                @*@Html.DropDownList("MaHang", null, new { @class = "form-control", @id="MaHang" })*@
+
+                                <input type="text" id="MaHang" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label>Số lượng kế hoạch</label>
+                                <input type="text" id="SLKeHoach" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label>Thực hiện</label>
+                                <input type="text" id="ThucHien" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label>Lũy kế thực hiện</label>
+                                <input type="text" id="LuyKeThucHien" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label>Đèn báo cấp BTP</label>
+                                <input type="text" id="DenBaoCapBTP" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-10">
+                                <label>Ngày tạo</label>
+                                <input type="text" id="NgayTao" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnClose" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnSave" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @section Scripts{
+        <script type="text/javascript">
+        $(document).ready(function () {
+            getBangTheoDoiToCats();
+        })
+
+        //khai báo biến kiểm tra xem nếu như là false thì sẽ gọi hàm Insert ngược lại bằng true thì gọi làm Update
+        var isUpdatable = false;
+
+        //hàm hiển thị danh sách những record
+
+        function getBangTheoDoiToCats(){
+            $.ajax({
+                url: '/BangTheoDoiAJ/GetBangTheoDoi/',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var rows = '';
+                    $.each(data, function (i, item) {
+                        var date = new Date(parseInt(item.NgayTao.substr(6)));
+                        var datetime = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+
+                        var denbao = item.DenBaoCapBTP;
+                        if (denbao == true)
+                            denbao = "<i class='glyphicon glyphicon-ok'></i>";
+                        else
+                            denbao = "<i class='glyphicon glyphicon-remove'></i>";
+
+                        rows += "<tr>"
+                        rows += "<td>" + item.MaChuyen + "</td>"
+                        rows += "<td>" + item.MaHang + "</td>"
+                        rows += "<td align='center'>" + item.SLKeHoach + "</td>"
+                        rows += "<td align='center'>" + item.ThucHien + "</td>"
+                        rows += "<td align='center'>" + item.LuyKeThucHien + "</td>"
+                        rows += "<td align='center'>" + denbao + "</td>"
+                        rows += "<td>" + datetime + "</td>"
+                        rows += "<td><button type='button' id='btnEdit' class='btn btn-sm btn-primary' onclick='return getDetailBook(" + item.MaChuyen + ")'><i class='glyphicon glyphicon-pencil'></i></button> <button type='button' id='btnDelete' class='btn btn-sm btn-danger' onclick='return deleteBook(" + item.MaChuyen + ")'><i class='glyphicon glyphicon-trash'></i></button></td>"
+                        rows += "</tr>";
+                        $("#listBangTheoDoiToCats tbody").html(rows);
+                    });
+                },
+                error: function (err) {
+                    alert("Error: 1" + err.responseText);
+                }
+            });
+        }
+
+        // hàm lấy chi tiết một record dựa trên id
+        function getDetailBook(MaChuyen) {
+            $("#title").text("Details");
+            $.ajax({
+                url: '/BangTheoDoiAJ/Get?MaChuyen=' + MaChuyen,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $("#MaChuyen").val(data.MaChuyen);
+                    $("#MaHang").val(data.MaHang);
+                    $("#SLKeHoach").val(data.SLKeHoach);
+                    $("#ThucHien").val(data.ThucHien);
+                    $("#LuyKeThucHien").val(data.LuyKeThucHien);
+                    $("#DenBaoCapBTP").val(data.DenBaoCapBTP);
+
+                    var date = new Date(parseInt(data.NgayTao.substr(6)));
+                    var datetime = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+                    $("#NgayTao").val(datetime);
+                    isUpdatable = true;
+                    $("#bookModal").modal('show');
+                },
+                error: function (err) {
+                    alert("Error: 2" + err.responseText);
+                }
+            });
+        }
+
+        // hàm Insert và Update một record
+        $("#btnSave").click(function (e) {
+            e.preventDefault();
+
+            var dataCreate = {
+                MaHang: $("#MaHang").val(),
+                SLKeHoach: $("#SLKeHoach").val(),
+                ThucHien: $("#ThucHien").val(),
+                LuyKeThucHien: $("#LuyKeThucHien").val(),
+                DenBaoCapBTP: $("#DenBaoCapBTP").val(),
+                NgayTao: $("#NgayTao").val()
+            }
+
+            var dataUpdate = {
+                MaChuyen: $("#MaChuyen").val(),
+                MaHang: $("#MaHang").val(),
+                SLKeHoach: $("#SLKeHoach").val(),
+                ThucHien: $("#ThucHien").val(),
+                LuyKeThucHien: $("#LuyKeThucHien").val(),
+                DenBaoCapBTP: $("#DenBaoCapBTP").val(),
+                NgayTao: $("#NgayTao").val()
+            }
+
+            if (!isUpdatable) {
+                $.ajax({
+                    url: '/BangTheoDoiAJ/Create/',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: dataUpdate,
+                    success: function (data) {
+                        getBangTheoDoiToCats();
+                        $("#bookModal").modal('hide');
+                        clear();
+                    },
+                    error: function (err) {
+                        alert("Error: " + err.responseText);
+                    }
+                })
+            }
+            else {
+                $.ajax({
+                    url: '/BangTheoDoiAJ/Update/',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: dataUpdate,
+                    success: function (data) {
+                        getBangTheoDoiToCats();
+                        isUpdatable = false;
+                        $("#bookModal").modal('hide');
+                        clear();
+                    },
+                    error: function (err) {
+                        alert("Error: " + err.responseText);
+                    }
+                })
+            }
+        });
+
+        // ham delete book
+        function deleteBook(MaChuyen) {
+            var confirmDelete = confirm("Do you want to delete this book ?");
+            if (confirmDelete) {
+                $.ajax({
+                    url: "/BangTheoDoiAJ/Delete?MaChuyen=" + MaChuyen,
+                    type: "POST",
+                    dataType: 'json',
+                    success: function (data) {
+                        getBangTheoDoiToCats();
+                    },
+                    error: function (err) {
+                        alert("Error: 3" + err.responseText);
+                    }
+                });
+            }
+        }
+
+        $("#btnCreateNew").click(function () {
+            $("#title").text("Create New");
+        })
+
+        // hàm đóng modal
+        $("#btnClose").click(function () {
+            clear();
+        });
+
+        // hàm reset giá trị về rỗng sau khi thực hiện Insert hoặc Update
+        function clear() {
+            $("#MaChuyen").val("");
+            $("#MaHang").val("");
+            $("#SLKeHoach").val("");
+            $("#ThucHien").val("");
+            $("#LuyKeThucHien").val("");
+            $("#DenBaoCapBTP").val("");
+            $("#NgayTao").val("");
+        }
+
+
+        </script>
+    }
